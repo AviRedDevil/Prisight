@@ -1,38 +1,77 @@
-import Sidebar from "./components/Sidebar";
-import KpiCard from "./components/KpiCard";
-import DemandChart from "./components/DemandChart";
-import PricingCard from "./components/PricingCard";
-import InventoryCard from "./components/InventoryCard";
-import PromotionCard from "./components/PromotionCard";
+import { useState } from "react";
+
+import ProductModal from "./components/products/ProductModal";
+import ProductTable from "./components/products/ProductTable";
+import SalesUploadModal from "./components/sales/SalesUploadModal";
+import SalesChart from "./components/sales/SalesChart";
+import MarketModal from "./components/market/MarketModal";
 
 export default function Dashboard() {
+  const [add, setAdd] = useState(false);
+  const [list, setList] = useState(false);
+  const [salesModal, setSalesModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [marketModal, setMarketModal] = useState(false);
+
   return (
-    <div className="flex bg-gray-100">
-      <Sidebar />
+    <div className="space-y-6">
+      
+      {/* ACTION BUTTONS */}
+      <div className="flex gap-3">
+        <button
+          onClick={() => setAdd(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Add Product
+        </button>
 
-      <div className="flex-1 p-6 space-y-6">
-        
-        {/* KPI Row */}
-        <div className="grid grid-cols-4 gap-4">
-          <KpiCard title="Today's Revenue" value="₹1.2L" subtitle="Estimated" />
-          <KpiCard title="Forecasted Demand" value="180 Units" subtitle="Next 7 days" />
-          <KpiCard title="Stock Risk" value="High" subtitle="6 days left" />
-          <KpiCard title="Best Price" value="₹529" subtitle="AI Recommended" />
-        </div>
+        <button
+          onClick={() => setList(true)}
+          className="border px-4 py-2 rounded"
+        >
+          View Products
+        </button>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-2 gap-6">
-          <DemandChart />
-          <PricingCard />
-        </div>
+        <button
+          onClick={() => setSalesModal(true)}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Upload Sales
+        </button>
 
-        {/* Decision Engines */}
-        <div className="grid grid-cols-2 gap-6">
-          <InventoryCard />
-          <PromotionCard />
-        </div>
-
+        <button
+          onClick={() => setMarketModal(true)}
+          className="bg-purple-600 text-white px-4 py-2 rounded"
+        >
+          Market Data
+        </button>
       </div>
+
+      {/* SALES CHART */}
+      {selectedProduct && (
+        <SalesChart productId={selectedProduct} />
+      )}
+
+      {/* MODALS */}
+      {add && <ProductModal onClose={() => setAdd(false)} refresh={() => {}} />}
+
+      {list && (
+        <ProductTable
+          onClose={() => setList(false)}
+          onSelectProduct={(id) => {
+            setSelectedProduct(id);
+            setList(false);
+          }}
+        />
+      )}
+
+      {salesModal && (
+        <SalesUploadModal onClose={() => setSalesModal(false)} />
+      )}
+
+      {marketModal && (
+        <MarketModal onClose={() => setMarketModal(false)} />
+      )}
     </div>
   );
 }

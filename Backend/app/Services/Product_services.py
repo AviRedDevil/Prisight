@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.Product_model import Product
+from app.models.Elasticity_model import Elasticity
 
 class ProductService:
     @staticmethod
@@ -75,6 +76,13 @@ class ProductService:
         product = await db.get(Product, product_id)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
+        elasticity_result = await db.execute(
+            select(Elasticity).where(Elasticity.product_id == product_id)
+        )
+        elasticity = elasticity_result.scalars().first()
+        if elasticity:
+            await db.delete(elasticity)
+            await db.commit()
 
         await db.delete(product)
         await db.commit()
